@@ -5,98 +5,105 @@ import user from '../../../DB/model/user.js';
 import { where } from "sequelize";
 
 const router = Router();
-router.get('/',async (req, res) => {
-    const users = await user.findAll();
+
+   router.get('/',async (req, res) => {
+    const users = await user.findAll({
+        attributes: ["UserName", "Email"],
+      
+    });
     return res.status(200).json({message:"success",users})
    });
-   router.post('/',async (req, res) => {
-    const{UserName,Email,Passwords} =req.body;
-    var salt = bcrypt.genSaltSync(8);
-const hash = bcrypt.hashSync(Passwords, salt);
-await user.create({ UserName, Email, Passwords: hash });
-return res.status(201).json({message:"success"})
+  /*
+    router.delete('/:id', async (req, res) => {
+        try {
+            const id = req.params.id;
+    
+            // استخراج التوكن من الهيدر
+            const authHeader = req.headers.authorization;
+            if (!authHeader || !authHeader.startsWith("Bearer ")) {
+                return res.status(401).json({ message: "No token provided or invalid format" });
+            }
+    
+            const token = authHeader.split(" ")[1];
+            const decoded = jwt.verify(token, "your-secret-key");
+    
+            // تحقق من صلاحية المستخدم
+            if (decoded.role !== 'admain') {
+                return res.status(403).json({ message: 'Not authorized' });
+            }
+    
+            // جلب المستخدم من قاعدة البيانات
+            const userToDelete = await user.findByPk(id);
+            if (!userToDelete) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+    
+            await userToDelete.destroy();
+            return res.status(200).json({ message: 'User deleted successfully' });
+    
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "Internal server error" });
+        }
+    });
+    
+*/
 
-   });
-
-  /* router.post('/login',async (req, res) => {
-    const{Email,Passwords} =req.body;
-   const users= await user.findOne({
-    where:{Email:Email},
-})
-if (!user) {
-    return res.status(404).json({ message: "invalid email" });
-  }
-
-  const isPasswordValid = await bcrypt.compare(Passwords, user.Passwords);
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: "invalid password" });
-    } 
-
-return res.status(201).json(users)
-
-   });
-
-   router.post("/login", async (req, res) => {
+router.delete('/:id', async (req, res) => {
     try {
-      const { Email, Passwords } = req.body;
-  
-     
-      const foundUser = await user.findOne({ where: { Email } });
-  
-      
-      if (!foundUser) {
-        return res.status(404).json({ message: "Invalid email" });
-      }
-  
-                                                                     if (!foundUser.Passwords) {
-        return res.status(500).json({ message: "Password field is missing in database" });
-      }
-  
-      const isPasswordValid = await bcrypt.compare(Passwords, foundUser.Passwords);
-      if (!isPasswordValid) {
-        return res.status(401).json({ message: "Invalid password" });
-      }
-  
-   
-      return res.status(200).json({ message: "Login successful", user: foundUser });
-  
-    } catch (error) {
-      console.error("Login error:", error);
-      return res.status(500).json({ message: "Internal server error" });
-    }
-});*/
+        const id = req.params.id;
 
+        
+        const authHeader = req.headers.authorization;
 
-router.post("/login", async (req, res) => {
-    try {
-      const { Email, Passwords } = req.body;
-  
-      const foundUser = await user.findOne({ where: { Email } });
-  
-      if (!foundUser) {
-        return res.status(404).json({ message: "Invalid email" });
-      }
-  
-      if (!foundUser.Passwords) {
-        return res.status(500).json({ message: "Password field is missing in database" });
-      }
-  
-      const isPasswordValid = await bcrypt.compare(Passwords, foundUser.Passwords);
-      if (!isPasswordValid) {
-        return res.status(401).json({ message: "Invalid password" });
-      }
-  
-      const token = jwt.sign(
-        { id: foundUser.id, email: foundUser.Email }, 
-        "your-secret-key", 
-        { expiresIn: "1h" } 
-      );
-  
-      return res.status(200).json({ message: "Login successful", token });
-  
+        
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            console.error("Invalid Authorization Header:", authHeader);
+            return res.status(401).json({ message: "No token provided or invalid format" });
+        }
+
+       
+        let token = authHeader.split(" ")[1];
+        token = token.replace(/<|>/g, "").trim(); 
+        console.log("Extracted and Cleaned Token:", token);
+
+        
+        let decoded;
+        try {
+            decoded = jwt.verify(token, "your-secret-key");
+            console.log("Decoded Token:", decoded);
+        } catch (error) {
+            console.error("JWT Verification Error:", error);
+            if (error.name === "TokenExpiredError") {
+                return res.status(401).json({ message: "Token expired" });
+            }
+            if (error.name === "JsonWebTokenError") {
+                return res.status(401).json({ message: "Invalid token" });
+            }
+            return res.status(500).json({ message: "Internal server error" });
+        }
+
+        if (decoded.role !== 'admain') {
+            console.error("Unauthorized role:", decoded.role);
+            return res.status(403).json({ message: "Not authorized" });
+        }
+
+        
+        const userToDelete = await user.findByPk(id);
+        if (!userToDelete) {
+            console.error("User not found with ID:", id);
+            return res.status(404).json({ message: "User not found" });
+        }
+
+    
+        await userToDelete.destroy();
+        console.log("User deleted successfully:", id);
+        return res.status(200).json({ message: "User deleted successfully" });
+
     } catch (error) {
-      console.error("Login error:", error);
-      return res.status(500).json({ message: "Internal server error" });
+        console.error("Error in DELETE /:id:", error);
+        return res.status(500).json({ message: "Internal server error" });
     }
-  });
+});
+
    export default router;
