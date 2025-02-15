@@ -23,6 +23,11 @@ const Usern = sequelize.define(
       type: DataTypes.ENUM('user','admain'),
       defaultValue:'user',
       allowNull: false,
+    },
+    img:{
+        type: DataTypes.STRING,
+        allowNull: true,
+       
     }
   },
   {

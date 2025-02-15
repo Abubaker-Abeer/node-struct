@@ -5,7 +5,7 @@ export const sequelize = new Sequelize('node10', 'root', '', {
 });
 
 export const connectdb = () => {
-  sequelize.sync()
+  sequelize.sync(/*{ alter: true }*/)
     .then(() => {
       console.log("Database connection successful");
     })
