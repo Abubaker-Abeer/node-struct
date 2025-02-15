@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import user from '../../../DB/model/user.js';
 import  { registerschema, loginschema } from './auth.validation.js';
 import validation from'../../middleware/validation.js'
+import { sendemail } from "../../utils/sendemail.js";
 const router = Router();
 
 
@@ -59,7 +60,7 @@ router.post("/login" ,validation(loginschema),async (req, res) => {
         "your-secret-key", 
         { expiresIn: "1h" } 
       );
-  
+      sendemail(Email)
       return res.status(200).json({ message: "Login successful", token });
   
     } catch (error) {
