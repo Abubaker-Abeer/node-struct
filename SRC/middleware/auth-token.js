@@ -21,6 +21,8 @@ const auth =()=>{
                 let decoded;
                 try {
                     decoded = jwt.verify(token, "your-secret-key");
+                    console.log("✅ Decoded Token:", decoded); 
+               //     return res.json({ message: decoded});
                     console.log("Decoded Token:", decoded);
                 } catch (error) {
                     console.error("JWT Verification Error:", error);
@@ -37,7 +39,9 @@ const auth =()=>{
                     console.error("Unauthorized role:", decoded.role);
                     return res.status(403).json({ message: "Not authorized" });
                 }
-next();    }
+                req.id=decoded.id;
+next();    
+}
 
         catch(error){
             console.error("Authentication error:", error);

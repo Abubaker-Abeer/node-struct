@@ -41,6 +41,7 @@ router.post("/login" ,validation(loginschema),async (req, res) => {
       }
 */
       const foundUser = await user.findOne({ where: { Email } });
+      console.log("UserID:", foundUser.UserID);
   
       if (!foundUser) {
         return res.status(404).json({ message: "Invalid email" });
@@ -56,7 +57,7 @@ router.post("/login" ,validation(loginschema),async (req, res) => {
       }
   
       const token = jwt.sign(
-        { id: foundUser.id, email: foundUser.Email ,UserName:foundUser.UserName ,role:foundUser.role}, 
+        { id: foundUser.UserID, email: foundUser.Email ,UserName:foundUser.UserName ,role:foundUser.role}, 
         "your-secret-key", 
         { expiresIn: "1h" } 
       );
