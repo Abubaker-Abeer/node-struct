@@ -33,3 +33,11 @@ export const createblog =  async (req, res,next) => {
         return res.status(201).json({ message: 'Success', blog });
     
 }
+export const getdetails = async(req, res, next) => {
+  const {id} = req.params;
+  const blogs= await Blog.findByPk(id)
+  if(blogs==null){
+    return next(new AppError(404, "Blog not found."));
+  }
+  return res.status(200).json({message: 'Success',blog: blogs})
+}
