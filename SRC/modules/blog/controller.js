@@ -1,5 +1,6 @@
 import Blog from '../../../DB/model/blog.js';
 import Usern from '../../../DB/model/user.js';
+import {AppError} from '../../../SRC/utils/AppError.js';
 
 export const getblog = async (req, res) =>{
     const blogs = await Blog.findAll({
@@ -10,21 +11,22 @@ export const getblog = async (req, res) =>{
     return res.status(200).json({message:'Success',blogs})    
 
 }
-export const createblog =  async (req, res) => {
+export const createblog =  async (req, res,next) => {
   
-      const ID= req.id; // ✅ طباعة بيانات المستخدم للتحقق
+      const ID= req.id; 
         const { title, description } = req.body;
 
-        // التحقق مما إذا كانت البيانات مكتملة
+      
         if (!title || !description) {
-            return res.status(400).json({ message: "Title and description are required." });
+      //      return res.status(400).json({ message: "Title and description are required." });
+      return next(new AppError(400, "Title and description are required."));
         }
 
-        // هنا المشكلة: ربما req.user غير معرف
+      
         const blog = await Blog.create({
             title,
             description,
-            UserID: ID // 🔴 قد تكون req.id غير صحيحة، استخدم req.user.id بدلاً منها
+            UserID: ID 
         });
         console.log('id',ID)
 
