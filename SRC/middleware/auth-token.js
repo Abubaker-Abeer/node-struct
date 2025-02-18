@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 const auth =()=>{
  
     return(req, res, next)=>{
-        try{
+      
         const authHeader = req.headers.authorization;
         
                 
@@ -19,21 +19,12 @@ const auth =()=>{
         
                 
                 let decoded;
-                try {
+            
                     decoded = jwt.verify(token, "your-secret-key");
                     console.log("✅ Decoded Token:", decoded); 
                //     return res.json({ message: decoded});
                     console.log("Decoded Token:", decoded);
-                } catch (error) {
-                    console.error("JWT Verification Error:", error);
-                    if (error.name === "TokenExpiredError") {
-                        return res.status(401).json({ message: "Token expired" });
-                    }
-                    if (error.name === "JsonWebTokenError") {
-                        return res.status(401).json({ message: "Invalid token" });
-                    }
-                    return res.status(500).json({ message: "Internal server error" });
-                }
+                
         
                 if (decoded.role !== 'admain') {
                     console.error("Unauthorized role:", decoded.role);
@@ -43,10 +34,7 @@ const auth =()=>{
 next();    
 }
 
-        catch(error){
-            console.error("Authentication error:", error);
-            return res.status(500).json({ message: "Internal server error" });
-        }}
+        
 }
 
 export default auth;

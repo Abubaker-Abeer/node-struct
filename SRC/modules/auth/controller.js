@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import user from '../../../DB/model/user.js';
 import { sendemail } from "../../utils/sendemail.js";
 export const Register = async (req, res) => {
-    try {
+  
         const { UserName, Email, Passwords } = req.body;
         var salt = bcrypt.genSaltSync(8);
         const hash = bcrypt.hashSync(Passwords, salt);
@@ -11,13 +11,10 @@ export const Register = async (req, res) => {
         await user.create({ UserName, Email, Passwords: hash });
   
         return res.status(201).json({ message: "success" });
-    } catch (err) {
-        console.log(err);
-        return res.status(400).json({ message: err.message });
-    }
+    
   }
 export const login =  async (req, res) => {
-    try {
+    
         const { Email, Passwords } = req.body;
         const foundUser = await user.findOne({ where: { Email } });
         console.log("UserID:", foundUser.UserID);
@@ -43,9 +40,6 @@ export const login =  async (req, res) => {
         sendemail(Email)
         return res.status(200).json({ message: "Login successful", token });
     
-      } catch (error) {
-        console.error("Login error:", error);
-        return res.status(500).json({ message: "Internal server error" });
-      }
+      
     
 }

@@ -12,7 +12,7 @@ export const createblog =  async (req, res) => {
 
 }
 export const deleteuser=async (req, res) => {
-    try {
+   
         const id = req.params.id;
 
         const userToDelete = await user.findByPk(id);
@@ -26,10 +26,7 @@ export const deleteuser=async (req, res) => {
         console.log("User deleted successfully:", id);
         return res.status(200).json({ message: "User deleted successfully" });
 
-    } catch (error) {
-        console.error("Error in DELETE /:id:", error);
-        return res.status(500).json({ message: "Internal server error" });
-    }
+   
 }
 export const updateuserimg=async (req, res) => {
     const id = req.params.id;

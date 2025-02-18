@@ -31,12 +31,9 @@ export const sendResetPasswordEmail = async (email, resetCode) => {
     </p>`,
   };
 
-  try {
     const info = await transporter.sendMail(mailOptions);
     console.log('Email sent: ' + info.response);
-  } catch (error) {
-    console.error('Email not sent: ' + error);
-  }
+ 
 };
 
 export const generateUniqueCode = (length) => {

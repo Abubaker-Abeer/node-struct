@@ -11,7 +11,7 @@ export const getblog = async (req, res) =>{
 
 }
 export const createblog =  async (req, res) => {
-    try {
+  
       const ID= req.id; // ✅ طباعة بيانات المستخدم للتحقق
         const { title, description } = req.body;
 
@@ -29,8 +29,5 @@ export const createblog =  async (req, res) => {
         console.log('id',ID)
 
         return res.status(201).json({ message: 'Success', blog });
-    } catch (error) {
-        console.error("Error creating blog:", error);
-        return res.status(500).json({ message: "Internal server error" });
-    }
+    
 }
