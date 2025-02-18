@@ -10,6 +10,8 @@ const initApp=(app,express)=>{
     app.use('/user',userrouter);
     app.use('/auth',authrouter);
     app.use('/blog',blogrouter);
-    
+    app.use((err,req,res,next)=>{
+    return  res.status(400).json({ msg: err.message });
+    });
 }
 export  default initApp

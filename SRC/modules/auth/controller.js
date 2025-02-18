@@ -13,14 +13,15 @@ export const Register = async (req, res) => {
         return res.status(201).json({ message: "success" });
     
   }
-export const login =  async (req, res) => {
+/*export const login =  async (req, res,next) => {
     
         const { Email, Passwords } = req.body;
         const foundUser = await user.findOne({ where: { Email } });
         console.log("UserID:", foundUser.UserID);
     
         if (!foundUser) {
-          return res.status(404).json({ message: "Invalid email" });
+        //  return res.status(404).json({ message: "Invalid email" });
+          return next(new Error(`Invalid email`))
         }
     
         if (!foundUser.Passwords) {
@@ -43,3 +44,35 @@ export const login =  async (req, res) => {
       
     
 }
+*/
+export const login = async (req, res, next) => {
+  try {
+      const { Email, Passwords } = req.body;
+      
+      const foundUser = await user.findOne({ where: { Email } });
+      if (!foundUser) {
+          return next(new Error("Invalid email"));
+      }
+
+      if (!foundUser.Passwords) {
+          return next(new Error("Password field is missing in database"));
+      }
+
+      const isPasswordValid = await bcrypt.compare(Passwords, foundUser.Passwords);
+      if (!isPasswordValid) {
+          return next(new Error("Invalid password"));
+      }
+
+      const token = jwt.sign(
+          { id: foundUser.UserID, email: foundUser.Email, UserName: foundUser.UserName, role: foundUser.role }, 
+          "your-secret-key", 
+          { expiresIn: "1h" }
+      );
+
+      sendemail(Email);
+      return res.status(200).json({ message: "Login successful", token });
+
+  } catch (error) {
+      next(error); 
+  }
+};
