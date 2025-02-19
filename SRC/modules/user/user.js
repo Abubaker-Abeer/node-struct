@@ -6,8 +6,7 @@ import {asyncHandler} from '../../../SRC/utils/catcherror.js';
 
 const router = Router();
 
-   router.get('/',auth(),asyncHandler(getusers));
- 
+   router.get('/',asyncHandler(getusers));
 
 router.delete('/:id',auth(), asyncHandler(deleteuser));
 
